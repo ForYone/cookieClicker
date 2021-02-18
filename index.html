@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello React</title>
+    <!-- Library -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- babel => compilation du JSX -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+        body {
+            background-color: burlywood;
+        }
+
+        .img:active {
+            width: 185px;
+            height: 185px;
+            box-shadow: 10px 0px 5px 1px rgb(24, 22, 22);
+        }
+
+        .img {
+            border-radius: 100px;
+            width: 200px;
+            height: 200px;
+            float: right;
+
+        }
+
+        .count-width {
+            font-size: 50px;
+
+            width: 100px;
+        }
+
+        .div-bonus {
+            width: 100px;
+            height: 50px;
+            background-color: red;
+            text-align: center;
+
+        }
+
+        .display {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        // App est l'élément qui servira de base pour votre application, c'est son point d'entrée.
+        class App extends React.Component {
+
+            render() {
+                return (
+                    <CookieClicker />
+                )
+
+            }
+        }
+
+        class CookieClicker extends React.Component {
+            constructor() {
+                super();
+                this.state = {
+                    counter: 0,
+                    counterGM: 0,
+                    isDisplayBonus: false,
+                    isDisplayGM: false,
+                    isDisplayBonusPourcentage: false,
+                }
+                this.count = this.count.bind(this);
+                this.ajoutDuneGrandMere = this.ajoutDuneGrandMere.bind(this);
+                this.updateCounter = this.updateCounter.bind(this);
+                this.ajoutDuPourcentage = this.ajoutDuPourcentage.bind(this);
+                this.bonusAleatoir = this.bonusAleatoir.bind(this);
+                this.afficherBonnueAleatoir = this.afficherBonnueAleatoir.bind(this);
+
+                this.interval = setInterval(this.updateCounter, 1000);
+
+
+            }
+
+
+            componentDidUpdate() {
+                const limitePourCookieMystereBA = [50, 100, 150, 300, 400, 500];
+                const limiteBonnusGM = [60, 120, 300, 500, 550, 1000];
+                const limiteBonnusPC = [100, 200, 300, 400];
+                // console.log(limitePourCookieMystereBA[limitePourCookieMystereBA.indexOf(this.state.counter)]);
+
+                this.isDisplayButton(limitePourCookieMystereBA, this.state.counter, this.state.isDisplayBonus, 'isDisplayBonus');
+                this.isDisplayButton(limiteBonnusGM, this.state.counter, this.state.isDisplayGM, 'isDisplayGM');
+                this.isDisplayButton(limiteBonnusPC, this.state.counter, this.state.isDisplayBonusPourcentage, 'isDisplayBonusPourcentage');
+
+            }
+
+            isDisplayButton(array, stateCounter, displayCondition, isDisplay) {
+
+                if (array.indexOf(stateCounter) !== -1 && displayCondition === false) {
+                    this.setState({
+                        [isDisplay]: true,
+                    })
+                }
+            }
+
+            render() {
+                return (
+
+                    <div>
+                        <p className="count-width">{this.state.counter}</p>
+                        <div>
+                            {this.buttonGM()}
+
+                            {this.ajoutBtnPrendreBonus()}
+
+                        </div>
+                        {this.afficherBonnueAleatoir()}
+
+                        <div>
+                            <img className="img" src="https://www.lespatisseriesdaurelien.fr/wp-content/uploads/2020/04/Classic-cookies-1.jpg" onClick={this.count} alt="rien" />
+
+                        </div>
+                    </div>
+                )
+            }
+            /* *
+             * Ajoute +1 au counter
+             */
+            count() {
+                this.setState({
+                    counter: this.state.counter + 1,
+                })
+            }
+            /* *
+             * Ajoute +1 au counterGM
+             * Passer le isDplay a false
+             */
+            ajoutDuneGrandMere() {
+                this.setState({
+                    counterGM: this.state.counterGM + 1,
+                    isDisplayGM: false,
+                })
+            }
+
+
+            /* *
+             *  Mise à jour du counter avec le bonus grand-mere
+             */
+            updateCounter() {
+                this.setState({
+                    counter: this.state.counter + this.state.counterGM
+                })
+            }
+
+            /* *
+            * Ajouter le pourcentage
+            */
+            ajoutDuPourcentage() {
+                this.setState({
+                    counter: this.state.counter + Math.round(this.state.counter * 0.1),
+                    isDisplayBonusPourcentage: false,
+                })
+
+            }
+
+            /* *
+             *Mise a jour du counter avec le bonus aleatoire
+             */
+            bonusAleatoir() {
+                this.setState({
+                    counter: this.state.counter + Math.round(Math.random() * 100),
+                    isDisplayBonus: false,
+                })
+            }
+
+            /* *
+             * Affichage du boutton bonus
+             */
+            afficherBonnueAleatoir() {
+
+                if (this.state.isDisplayBonus) {
+                    return <button className='div-bonus' onClick={this.bonusAleatoir}>BONUS Aleatoire</button>
+
+                }
+            }
+
+            /* *
+             * Affichage du boutton Ajouter une grand-mere
+             */
+            buttonGM() {
+
+                if (this.state.isDisplayGM) {
+                    return <button onClick={this.ajoutDuneGrandMere}>Ajouter une Grand-mere</button>
+                }
+            }
+
+            /* 
+             * Affichage du boutton bonus aleatoire
+             */
+            ajoutBtnPrendreBonus() {
+
+                if (this.state.isDisplayBonusPourcentage) {
+                    return <button onClick={this.ajoutDuPourcentage}> Prendre votre bonus de 10%/s</button>
+
+                }
+
+            }
+
+
+        }
+
+
+
+        // Rendu dans le DOM
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+
+</html>
